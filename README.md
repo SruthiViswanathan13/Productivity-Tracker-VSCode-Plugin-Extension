@@ -13,6 +13,10 @@ VSCode plugin extension to track day-wise productivity of a developer inside the
 3. Select the folder location where you want the log files to be stored.
 Note: Step 2 and 3 are optional. Default location is set to `C:/Productivity-Tracker`
 
+## Saved Logs
+
+![alt text](assets/log-example.png)
+
 # Local Development Instructions
 
 ## Steps to update the plugin login
