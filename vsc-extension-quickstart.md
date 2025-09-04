@@ -1,4 +1,4 @@
-# Welcome to your VS Code Extension
+# Welcome to Productivity Tracker Plugin
 
 ## What's in the folder
 
@@ -21,22 +21,29 @@
 * You can relaunch the extension from the debug toolbar after changing code in `extension.js`.
 * You can also reload (`Ctrl+R` or `Cmd+R` on Mac) the VS Code window with your extension to load your changes.
 
-## Explore the API
+# Local Development Instructions
 
-* You can open the full set of our API when you open the file `node_modules/@types/vscode/index.d.ts`.
+## Steps to update the plugin login
+1. Add or update logic in extension.js
+2. Run `npm install`
+3. Execute `code .`
+4. Press `F5` to test the plugin in debug mode.
 
-## Run tests
+# Testing out the plugin independently outside of development.
 
-* Install the [Extension Test Runner](https://marketplace.visualstudio.com/items?itemName=ms-vscode.extension-test-runner)
-* Open the Testing view from the activity bar and click the Run Test" button, or use the hotkey `Ctrl/Cmd + ; A`
-* See the output of the test result in the Test Results view.
-* Make changes to `test/extension.test.js` or create new test files inside the `test` folder.
-  * The provided test runner will only consider files matching the name pattern `**.test.js`.
-  * You can create folders inside the `test` folder to structure your tests any way you want.
+## Compile the plugin
 
-## Go further
+1. Run `npm install`
+2. Run `npx vsce package`
+3. This will generate a plugin with name -> `productivity-tracker-version.vsix`
 
- * [Follow UX guidelines](https://code.visualstudio.com/api/ux-guidelines/overview) to create extensions that seamlessly integrate with VS Code's native interface and patterns.
- * [Publish your extension](https://code.visualstudio.com/api/working-with-extensions/publishing-extension) on the VS Code extension marketplace.
- * Automate builds by setting up [Continuous Integration](https://code.visualstudio.com/api/working-with-extensions/continuous-integration).
- * Integrate to the [report issue](https://code.visualstudio.com/api/get-started/wrapping-up#issue-reporting) flow to get issue and feature requests reported by users.
+## Import the plugin.
+
+1. Click on the extensions in VSCode.
+2. Click on view and more options.
+3. Import the vsix plugin from the saved location.
+
+## Verify the plugin
+
+1. Open any code repository or folders.
+2. Update the code, every 1 minute, the code changes are added to the log file saved in `C:Productivity-Tracker` as a day-wise .json file.

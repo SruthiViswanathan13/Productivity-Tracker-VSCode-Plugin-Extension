@@ -15,10 +15,38 @@ function markActivity() {
     lastActivityTime = Date.now();
 }
 
+let logFolderPath = undefined;
+const DEFAULT_LOG_FOLDER = 'C:/Productivity-Tracker';
+
+async function selectLogFolder() {
+    const folderUri = await vscode.window.showOpenDialog({
+        canSelectFiles: false,
+        canSelectFolders: true,
+        canSelectMany: false,
+        openLabel: 'Select log folder'
+    });
+    if (folderUri && folderUri[0]) {
+        logFolderPath = folderUri[0].fsPath;
+        vscode.window.showInformationMessage('Log folder set to: ' + logFolderPath);
+    } else {
+        vscode.window.showInformationMessage('No folder selected. Using default log folder.');
+    }
+}
+
+function getLogFolderPath() {
+    return logFolderPath || DEFAULT_LOG_FOLDER;
+}
+
 /**
  * Called when the extension is activated
  */
 function activate(context) {
+
+    let disposable = vscode.commands.registerCommand('productivity-tracker.selectLogFolder', selectLogFolder);
+    context.subscriptions.push(disposable);
+    // Print log folder path on activation
+    console.log('Log folder on activation:', getLogFolderPath());
+
     // Start timer to count active seconds
     interval = setInterval(() => {
         if (Date.now() - lastActivityTime < IDLE_THRESHOLD) {
@@ -121,7 +149,7 @@ function activate(context) {
 
 function writeDailyLog() {
     const today = new Date().toISOString().slice(0, 10);
-    const logDir = path.join('C:/Productivity-Tracker');
+    const logDir = path.join(getLogFolderPath());
     const logFile = path.join(logDir, `${today}.json`);
 
     if (!fs.existsSync(logDir)) {

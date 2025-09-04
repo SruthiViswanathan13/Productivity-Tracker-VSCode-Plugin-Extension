@@ -3,7 +3,7 @@
   "publisher": "Judy",
   "displayName": "Productivity Tracker",
   "description": "Track metrics for developer productivity in VS Code",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "engines": {
     "vscode": "^1.54.0"
   },
@@ -19,6 +19,11 @@
     "commands": [{
       "command": "productivity-tracker.helloWorld",
       "title": "Capture Productivity Metrics"
+    },
+    {
+      "command": "productivity-tracker.selectLogFolder",
+      "title": "Productivity Tracker: Select Log Folder",
+      "category": "Productivity Tracker"
     }],
     "configuration": {
       "type": "object",
