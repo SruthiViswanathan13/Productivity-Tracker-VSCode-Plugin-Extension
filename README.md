@@ -15,7 +15,7 @@ Note: Step 2 and 3 are optional. Default location is set to `C:/Productivity-Tra
 
 ## Saved Logs
 
-![alt text](assets/log-example.png)
+![alt text](assets/example-log-file.png)
 
 # Local Development Instructions
 

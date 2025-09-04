@@ -3,7 +3,7 @@
   "publisher": "Judy",
   "displayName": "Productivity Tracker",
   "description": "Track metrics for developer productivity in VS Code",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "engines": {
     "vscode": "^1.54.0"
   },
@@ -56,5 +56,9 @@
     "eslint": "^9.21.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SruthiViswanathan13/Productivity-Tracker-VSCode-Plugin-Extension.git"
   }
 }

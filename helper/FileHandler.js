@@ -1,6 +1,7 @@
 const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 function writeDailyLog(getLogFolderPath, fileChangeLogs, activeSeconds) {
     const today = new Date().toISOString().slice(0, 10);
@@ -58,30 +59,30 @@ function writeDailyLog(getLogFolderPath, fileChangeLogs, activeSeconds) {
     fs.writeFileSync(logFile, JSON.stringify(logs, null, 2));
 }
 
+function getGitDiff(filePath) {
+    try {
+        // Get the diff for the file (unstaged changes)
+        const diff = execSync(`git --no-pager diff "${filePath}"`, { cwd: path.dirname(filePath) }).toString();
+        return diff;
+    } catch (e) {
+        return '';
+    }
+}
+
 function handleFileChange(event, fileChangeLogs) {
-    const contentChanges = event.contentChanges;
-
+    const filePath = event.document.uri.fsPath;
     let added = 0, removed = 0;
-    let codeChanges = '';
-
-    contentChanges.forEach(change => {
+    event.contentChanges.forEach(change => {
         const newLines = change.text.split('\n').length - 1;
         const oldLines = change.range.end.line - change.range.start.line;
         added += newLines;
         removed += oldLines;
-        // Only log meaningful code changes (not just whitespace or repeated accidental typing)
-        if (change.text && /\S/.test(change.text)) {
-            // Avoid logging repeated accidental retyping by checking for duplicate consecutive text
-            if (!codeChanges.endsWith(change.text)) {
-                codeChanges += change.text;
-            }
-        }
     });
-
-    const filePath = event.document.uri.fsPath;
     // Check if Copilot is enabled
     const copilotExt = vscode.extensions.getExtension('GitHub.copilot');
     const isCopilotEnabled = copilotExt && copilotExt.isActive;
+    // Get only the actual diff
+    const codeChanges = getGitDiff(filePath);
     const existing = fileChangeLogs.find(f => f.filePath === filePath);
     if (existing) {
         existing.linesAdded += added;
@@ -109,10 +110,17 @@ function handleFileCreation(event, fileChangeLogs) {
         const filePath = file.fsPath;
         const copilotExt = vscode.extensions.getExtension('GitHub.copilot');
         const isCopilotEnabled = copilotExt && copilotExt.isActive;
+        let codeChanges = '';
+        try {
+            codeChanges = fs.readFileSync(filePath, 'utf8');
+        } catch (e) {
+            codeChanges = '';
+        }
         fileChangeLogs.push({
             filePath,
             action: 'created',
             isCopilotEnabled,
+            codeChanges,
             timestamp: new Date().toISOString()
         });
     });
@@ -123,10 +131,18 @@ function handleFileDeletion(event, fileChangeLogs) {
         const filePath = file.fsPath;
         const copilotExt = vscode.extensions.getExtension('GitHub.copilot');
         const isCopilotEnabled = copilotExt && copilotExt.isActive;
+        let codeChanges = '';
+        try {
+            // Get last committed content before deletion
+            codeChanges = execSync(`git show HEAD:"${filePath}"`, { cwd: path.dirname(filePath) }).toString();
+        } catch (e) {
+            codeChanges = '';
+        }
         fileChangeLogs.push({
             filePath,
             action: 'deleted',
             isCopilotEnabled,
+            codeChanges,
             timestamp: new Date().toISOString()
         });
     });
