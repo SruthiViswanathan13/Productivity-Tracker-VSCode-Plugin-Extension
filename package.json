@@ -1,0 +1,55 @@
+{
+  "name": "productivity-tracker",
+  "publisher": "Judy",
+  "displayName": "Productivity Tracker",
+  "description": "Track metrics for developer productivity in VS Code",
+  "version": "0.0.8",
+  "engines": {
+    "vscode": "^1.54.0"
+  },
+  "icon": "logo.png",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [{
+      "command": "productivity-tracker.helloWorld",
+      "title": "Capture Productivity Metrics"
+    }],
+    "configuration": {
+      "type": "object",
+      "title": "Productivity Tracker",
+      "properties": {
+        "productivity-tracker.excludedDirs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["node_modules", ".git"],
+          "description": "Directories to exclude from productivity tracking."
+        },
+        "productivity-tracker.excludedFiles": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": ["package.json", "package-lock.json", "yarn.lock"],
+          "description": "Files to exclude from productivity tracking."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.54.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "eslint": "^9.21.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1"
+  }
+}
