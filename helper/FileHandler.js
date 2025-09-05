@@ -18,9 +18,32 @@ function writeDailyLog(getLogFolderPath, fileChangeLogs, activeSeconds) {
             const existing = fs.readFileSync(logFile, 'utf8');
             logs = JSON.parse(existing);
         } catch (e) {
-            logs = {};
+            logs = { 
+                timeSpentInIDE: '00:00:00', 
+                totalFilesModified: 0, 
+                totalFilesAdded: 0, 
+                totalFilesDeleted: 0 
+            };
         }
     }
+
+    // Calculate total IDE time in HH:MM:SS format
+    function formatTime(seconds) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = seconds % 60;
+        return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
+    }
+
+    // Accumulate timeSpentInIDE for today
+    let previousSeconds = 0;
+    if (logs.timeSpentInIDE && typeof logs.timeSpentInIDE === 'string') {
+        const parts = logs.timeSpentInIDE.split(':').map(Number);
+        if (parts.length === 3) {
+            previousSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+        }
+    }
+    const timeSpentInIDE = formatTime(previousSeconds + activeSeconds);
 
     if (!logs[today]) {
         logs[today] = [];
@@ -56,6 +79,26 @@ function writeDailyLog(getLogFolderPath, fileChangeLogs, activeSeconds) {
         }
     });
 
+    // Count and accumulate file actions for today
+    let prevModified = logs.totalFilesModified || 0;
+    let prevAdded = logs.totalFilesAdded || 0;
+    let prevDeleted = logs.totalFilesDeleted || 0;
+
+    // Count new actions in this session
+    let modified = 0, added = 0, deleted = 0;
+    logs[today].forEach(log => {
+        if (log.action === 'modified') modified++;
+        if (log.action === 'created') added++;
+        if (log.action === 'deleted') deleted++;
+    });
+
+    // Accumulate with previous values
+    logs.totalFilesModified = prevModified + modified;
+    logs.totalFilesAdded = prevAdded + added;
+    logs.totalFilesDeleted = prevDeleted + deleted;
+
+    // Add timeSpentInIDE to the top level of the log file
+    logs.timeSpentInIDE = timeSpentInIDE;
     fs.writeFileSync(logFile, JSON.stringify(logs, null, 2));
 }
 
