@@ -6,7 +6,7 @@ VSCode plugin extension to track day-wise productivity of a developer inside the
 ## Extension installed
 ![alt text](assets/plugin.png)
 
-## Setting the log file path
+## Setting the log file path (Optional for Windows)
 1. Press `Ctrl+Shift+P`
 2. Select this option
 ![alt text](assets/set-log-path.png)
@@ -15,7 +15,7 @@ Note: Step 2 and 3 are optional. Default location is set to `C:/Productivity-Tra
 
 ## Saved Logs
 
-![alt text](assets/example-log-file.png)
+![alt text](assets/example-logs.png)
 
 # Local Development Instructions
 
@@ -29,7 +29,7 @@ Note: Step 2 and 3 are optional. Default location is set to `C:/Productivity-Tra
 
 ## Compile the plugin
 
-1. Run `npm install`
+1. Make some changes to the code, update the version in the package.json and Run `npm install`
 2. Run `npx vsce package`
 3. This will generate a plugin with name -> `productivity-tracker-version.vsix`
 
@@ -42,5 +42,5 @@ Note: Step 2 and 3 are optional. Default location is set to `C:/Productivity-Tra
 ## Verify the plugin
 
 1. Open any code repository or folders.
-2. Update the code, every 1 minute, the code changes are added to the log file saved in `C:Productivity-Tracker` as a day-wise .json file.
+2. Update the code, every 1 minute and during the IDE exit, the productivity logs saved in `C:Productivity-Tracker` in updated as a day-wise .json file.
 

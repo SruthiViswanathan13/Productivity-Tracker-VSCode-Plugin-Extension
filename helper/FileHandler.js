@@ -79,27 +79,30 @@ function writeDailyLog(getLogFolderPath, fileChangeLogs, activeSeconds) {
         }
     });
 
-    // Count and accumulate file actions for today
-    let prevModified = logs.totalFilesModified || 0;
-    let prevAdded = logs.totalFilesAdded || 0;
-    let prevDeleted = logs.totalFilesDeleted || 0;
-
-    // Count new actions in this session
-    let modified = 0, added = 0, deleted = 0;
+    // Count unique files for each action for today
+    const modifiedFiles = new Set();
+    const addedFiles = new Set();
+    const deletedFiles = new Set();
     logs[today].forEach(log => {
-        if (log.action === 'modified') modified++;
-        if (log.action === 'created') added++;
-        if (log.action === 'deleted') deleted++;
+        if (log.action === 'modified') modifiedFiles.add(log.filePath);
+        if (log.action === 'created') addedFiles.add(log.filePath);
+        if (log.action === 'deleted') deletedFiles.add(log.filePath);
     });
 
-    // Accumulate with previous values
-    logs.totalFilesModified = prevModified + modified;
-    logs.totalFilesAdded = prevAdded + added;
-    logs.totalFilesDeleted = prevDeleted + deleted;
+    logs.totalFilesModified = modifiedFiles.size;
+    logs.totalFilesAdded = addedFiles.size;
+    logs.totalFilesDeleted = deletedFiles.size;
 
     // Add timeSpentInIDE to the top level of the log file
     logs.timeSpentInIDE = timeSpentInIDE;
     fs.writeFileSync(logFile, JSON.stringify(logs, null, 2));
+    // Reset activeSeconds after writing log to prevent double-counting
+    if (typeof global !== 'undefined' && global.activeSeconds !== undefined) {
+        global.activeSeconds = 0;
+    }
+    if (typeof activeSeconds === 'object' && activeSeconds !== null) {
+        activeSeconds.value = 0;
+    }
 }
 
 function getGitDiff(filePath) {
