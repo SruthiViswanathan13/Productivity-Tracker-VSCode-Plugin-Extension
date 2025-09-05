@@ -46,6 +46,7 @@ function activate(context) {
     // Track file creation
     context.subscriptions.push(
         vscode.workspace.onDidCreateFiles((event) => {
+            markActivity()
             handleFileCreation(event, fileChangeLogs);
         })
     );
@@ -53,6 +54,7 @@ function activate(context) {
     // Track file deletion
     context.subscriptions.push(
         vscode.workspace.onDidDeleteFiles((event) => {
+            markActivity()
             handleFileDeletion(event, fileChangeLogs)
         })
     );
