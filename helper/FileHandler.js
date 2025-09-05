@@ -1,7 +1,18 @@
 const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const { execSync } = require('child_process');
+
+let username = os.userInfo().username;
+
+let email = '';
+try {
+  email = execSync('git config user.email').toString().trim();
+  username = execSync('git config user.name').toString().trim();
+} catch (err) {
+  email = 'Not found';
+}
 
 function writeDailyLog(getLogFolderPath, fileChangeLogs, activeSeconds) {
     const today = new Date().toISOString().slice(0, 10);
@@ -19,10 +30,12 @@ function writeDailyLog(getLogFolderPath, fileChangeLogs, activeSeconds) {
             logs = JSON.parse(existing);
         } catch (e) {
             logs = { 
+                email: email,
+                userName: username,
                 timeSpentInIDE: '00:00:00', 
                 totalFilesModified: 0, 
-                totalFilesAdded: 0, 
-                totalFilesDeleted: 0 
+                totalFilesAdded: 0,
+                totalFilesDeleted: 0
             };
         }
     }
@@ -95,6 +108,8 @@ function writeDailyLog(getLogFolderPath, fileChangeLogs, activeSeconds) {
 
     // Add timeSpentInIDE to the top level of the log file
     logs.timeSpentInIDE = timeSpentInIDE;
+    logs.email = email;
+    logs.userName = username;
     fs.writeFileSync(logFile, JSON.stringify(logs, null, 2));
     // Reset activeSeconds after writing log to prevent double-counting
     if (typeof global !== 'undefined' && global.activeSeconds !== undefined) {
